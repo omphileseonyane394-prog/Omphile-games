@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>GTA Omphile City</title>
+<style>body{margin:0;background:#111;color:white;font-family:Arial;text-align:center}canvas{background:#666;display:block;margin:auto;border:3px solid #fff;max-width:95vw}button{padding:15px;font-size:22px;margin:3px;border-radius:10px}</style>
+</head><body>
+<h1>🏙️ GTA OMPHILE CITY</h1><div id="s">Coins: 0 | Wanted: ⭐</div>
+<canvas id="g" width="360" height="220"></canvas><br>
+<button onclick="px-=15">⬅️</button><button onclick="py-=15">⬆️</button><button onclick="py+=15">⬇️</button><button onclick="px+=15">➡️</button><br>
+<button onclick="location.reload()">🔄 RESTART</button><button onclick="location.href='index.html'">🏠 HOME</button>
+<script>
+let c=document.getElementById("g"),x=c.getContext("2d"),px=170,py=100,coins=0,leg=0;
+let cc=[];for(let i=0;i<8;i++)cc.push({x:Math.random()*320,y:Math.random()*180,t:false});
+function draw(){x.clearRect(0,0,360,220);x.fillStyle="#555";x.fillRect(0,0,360,220);x.fillStyle="#333";x.fillRect(0,100,360,25);x.fillRect(150,0,25,220);
+leg+=0.2;let s=Math.sin(leg)*5;
+for(let o of cc){if(!o.t){x.fillStyle="gold";x.beginPath();x.arc(o.x,o.y,10,0,Math.PI*2);x.fill();if(Math.abs(px+15-o.x)<20&&Math.abs(py+15-o.y)<20){o.t=true;coins++;}}}
+x.fillStyle="#FFD700";x.fillRect(px,py,30,25);x.fillStyle="#ffcc99";x.fillRect(px+5,py-15,20,15);
+x.strokeStyle="#000";x.lineWidth=4;x.beginPath();x.moveTo(px+8,py+25);x.lineTo(px+8+s,py+40);x.stroke();x.beginPath();x.moveTo(px+22,py+25);x.lineTo(px+22-s,py+40);x.stroke();
+document.getElementById("s").innerText="Coins: "+coins+" | Wanted: ⭐";
+requestAnimationFrame(draw);}draw();
+</script></body></html>
