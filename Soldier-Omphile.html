@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Soldier Omphile</title>
+<style>body{margin:0;background:#222;color:white;font-family:Arial;text-align:center}canvas{background:#444;display:block;margin:auto;border:3px solid #fff;max-width:95vw}button{padding:15px 25px;font-size:20px;background:red;color:white;border:none;border-radius:10px;margin:5px}#shoot{background:#00ff00;color:black;width:90%;padding:20px}</style>
+</head><body>
+<h1>🎖️ SOLDIER OMPHILE</h1><div id="s">Score: 0 | Killed: 0 / 10</div>
+<canvas id="g" width="360" height="220"></canvas><br>
+<button onclick="move(-20)">⬅️ LEFT</button><button onclick="move(20)">RIGHT ➡️</button><br>
+<button id="shoot" onclick="shoot()">🔫 SHOOT</button><br>
+<button onclick="location.reload()">🔄 RESTART</button>
+<button onclick="location.href='index.html'">🏠 HOME</button>
+<script>
+let c=document.getElementById("g"),x=c.getContext("2d"),px=160,bullets=[],enemies=[],score=0,killed=0,over=false,leg=0;
+for(let i=0;i<5;i++) enemies.push({x:Math.random()*300,y:30+Math.random()*60,alive:true});
+function move(d){px+=d;if(px<0)px=0;if(px>330)px=330;}
+function shoot(){bullets.push({x:px+15,y:170});}
+function draw(){x.clearRect(0,0,360,220);x.fillStyle="#333";x.fillRect(0,200,360,20);leg+=0.2;let s=Math.sin(leg)*6;
+x.fillStyle="#006600";x.fillRect(px,150,30,25);x.fillStyle="#ffcc99";x.fillRect(px+5,132,20,18);x.fillStyle="#006600";x.fillRect(px+5,132,20,5);
+x.strokeStyle="#000";x.lineWidth=4;x.beginPath();x.moveTo(px+8,175);x.lineTo(px+8+s,195);x.stroke();x.beginPath();x.moveTo(px+22,175);x.lineTo(px+22-s,195);x.stroke();
+for(let e of enemies){if(e.alive){x.fillStyle="red";x.fillRect(e.x,e.y,25,25);x.fillStyle="white";x.font="bold 12px Arial";x.fillText("BAD",e.x,e.y+16);}}
+for(let b of bullets){b.y-=8;x.fillStyle="yellow";x.fillRect(b.x,b.y,4,10);
+for(let e of enemies){if(e.alive&&b.x>e.x&&b.x<e.x+25&&b.y>e.y&&b.y<e.y+25){e.alive=false;killed++;score+=100;}}}
+enemies=enemies.filter(e=>e.alive);bullets=bullets.filter(b=>b.y>0);
+if(enemies.length<5&&killed<10&&Math.random()<0.02) enemies.push({x:Math.random()*300,y:30+Math.random()*60,alive:true});
+document.getElementById("s").innerText="Score: "+score+" | Killed: "+killed+" / 10";
+if(killed>=10&&!over){over=true;x.fillStyle="gold";x.font="bold 30px Arial";x.fillText("YOU WIN! 🏆",70,110);return;}
+if(!over) requestAnimationFrame(draw);} draw();
+</script></body></html>
