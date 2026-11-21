@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omphile VS Zombies</title>
+<style>body{margin:0;background:#111;color:white;font-family:Arial;text-align:center}canvas{background:#2a4d2a;display:block;margin:auto;border:3px solid #fff;max-width:95vw}button{padding:15px;font-size:20px;margin:3px;border-radius:10px}#shoot{background:red;color:white;width:90%;padding:18px}</style>
+</head><body>
+<h1>🧟 OMPHILE VS ZOMBIES</h1><div id="s">Killed: 0</div>
+<canvas id="g" width="360" height="220"></canvas><br>
+<button onclick="px-=20">⬅️</button><button onclick="px+=20">➡️</button><br>
+<button id="shoot" onclick="shoot()">🔫 SHOOT ZOMBIE</button><br>
+<button onclick="location.reload()">🔄 RESTART</button><button onclick="location.href='index.html'">🏠 HOME</button>
+<script>
+let c=document.getElementById("g"),x=c.getContext("2d"),px=160,bullets=[],zombies=[],killed=0,leg=0;
+for(let i=0;i<4;i++) zombies.push({x:Math.random()*300,y:40,alive:true});
+function shoot(){bullets.push({x:px+15,y:160});}
+function draw(){x.clearRect(0,0,360,220);x.fillStyle="#2a4d2a";x.fillRect(0,0,360,220);leg+=0.2;let s=Math.sin(leg)*6;
+x.fillStyle="#FFD700";x.fillRect(px,150,30,25);x.fillStyle="#ffcc99";x.fillRect(px+5,132,20,18);
+x.strokeStyle="#000";x.lineWidth=4;x.beginPath();x.moveTo(px+8,175);x.lineTo(px+8+s,195);x.stroke();x.beginPath();x.moveTo(px+22,175);x.lineTo(px+22-s,195);x.stroke();
+for(let z of zombies){if(z.alive){z.y+=0.4;z.x+=Math.sin(z.y/20)*0.5;x.fillStyle="green";x.fillRect(z.x,z.y,25,30);x.fillStyle="white";x.font="bold 10px Arial";x.fillText("ZOMBIE",z.x-5,z.y+15);if(z.y>200){z.y=20;z.x=Math.random()*300;}}}
+for(let b of bullets){b.y-=8;x.fillStyle="yellow";x.fillRect(b.x,b.y,4,10);for(let z of zombies){if(z.alive&&b.x>z.x&&b.x<z.x+25&&b.y>z.y&&b.y<z.y+30){z.alive=false;killed++;}}}
+zombies=zombies.filter(z=>z.alive);if(zombies.length<4&&Math.random()<0.03) zombies.push({x:Math.random()*300,y:20,alive:true});
+document.getElementById("s").innerText="Killed: "+killed;
+requestAnimationFrame(draw);}draw();
+</script></body></html>
