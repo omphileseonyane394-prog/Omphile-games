@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Omphile Run</title>
+<style>
+body{margin:0;background:#87CEEB;font-family:Arial;text-align:center;overflow:hidden}
+h1{margin:5px;color:#fff;text-shadow:2px 2px 0 #000;font-size:22px}
+#score{font-size:20px;font-weight:bold;color:white;text-shadow:1px 1px 0 #000}
+canvas{background:#87CEEB;display:block;margin:5px auto;border:3px solid #000;border-radius:10px;max-width:95vw}
+button{font-size:20px;padding:12px 25px;border-radius:10px;border:none;background:#FFD700;font-weight:bold;margin:5px}
+#jumpBtn{background:#00ff88;width:90%;padding:18px;font-size:24px}
+a{color:white}
+</style>
+</head>
+<body>
+<h1>🏃 OMPHILE RUN 🏃</h1>
+<div id="score">Score: 0 | Coins: 0 | Best: 0</div>
+<canvas id="game" width="360" height="220"></canvas>
+<br>
+<button id="jumpBtn" onclick="jump()">⬆️ JUMP ⬆️</button><br>
+<button onclick="location.reload()">🔄 RESTART</button>
+<button onclick="location.href='index.html'">🏠 HOME</button>
+<p><a href="index.html">Back to Omphile Game Studio</a></p>
+<script>
+let c=document.getElementById("game"),ctx=c.getContext("2d");
+let best=localStorage.getItem("omphileBest")||0;
+let player={x:50,y:150,w:30,h:45,vy:0,ground:150,jumping:false,leg:0,run:0};
+let coins=[],obstacles=[],score=0,coinCount=0,gameOver=false,frame=0;
+function jump(){if(!player.jumping){player.vy=-11;player.jumping=true;}}
+document.addEventListener("keydown",e=>{if(e.code==="Space")jump()});
+c.addEventListener("touchstart",jump);
+function spawn(){
+  if(frame%90===0) obstacles.push({x:360,y:165,w:20,h:30});
+  if(frame%70===0) coins.push({x:360,y:120+Math.random()*40,r:10,taken:false});
+}
+function drawPlayer(){
+  ctx.fillStyle="#8B4513";ctx.fillRect(player.x+5,player.y-18,20,20);
+  ctx.fillStyle="#000";ctx.fillRect(player.x+5,player.y-18,20,6);
+  ctx.fillStyle="#fff";ctx.fillRect(player.x+18,player.y-12,5,5);
+  ctx.fillStyle="#FFD700";ctx.fillRect(player.x,player.y+2,30,20);
+  ctx.fillStyle="#000";ctx.font="bold 11px Arial";ctx.fillText("OMPHILE",player.x-2,player.y+15);
+  // LEGS THAT MOVE!
+  player.run+=0.3;
+  let swing=Math.sin(player.run)*8;
+  if(player.jumping) swing=0;
+  ctx.strokeStyle="#000";ctx.lineWidth=5;ctx.lineCap="round";
+  ctx.beginPath();ctx.moveTo(player.x+8,player.y+22);ctx.lineTo(player.x+8+swing,player.y+42);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(player.x+22,player.y+22);ctx.lineTo(player.x+22-swing,player.y+42);ctx.stroke();
+  // ARMS
+  ctx.beginPath();ctx.moveTo(player.x+2,player.y+8);ctx.lineTo(player.x+2-swing,player.y+20);ctx.stroke();
+  ctx.beginPath();ctx.moveTo(player.x+28,player.y+8);ctx.lineTo(player.x+28+swing,player.y+20);ctx.stroke();
+}
+function loop(){
+  if(gameOver) return;
+  frame++;ctx.clearRect(0,0,360,220);
+  ctx.fillStyle="#228B22";ctx.fillRect(0,195,360,25);
+  ctx.fillStyle="#fff";ctx.fillRect((frame*0.5)%400-20,20,50,15);ctx.fillRect(((frame*0.5)+150)%400-20,40,60,15);
+  spawn();
+  player.vy+=0.6;player.y+=player.vy;
+  if(player.y>=player.ground){player.y=player.ground;player.vy=0;player.jumping=false;}
+  drawPlayer();
+  for(let o of obstacles){o.x-=4;ctx.fillStyle="#FF0000";ctx.fillRect(o.x,o.y,o.w,o.h);ctx.fillStyle="#fff";ctx.font="bold 10px Arial";ctx.fillText("X",o.x+5,o.y+20);
+    if(player.x<o.x+o.w&&player.x+player.w>o.x&&player.y<o.y+o.h&&player.y+player.h>o.y){gameOver=true;if(score>best){best=score;localStorage.setItem("omphileBest",best);}ctx.fillStyle="rgba(0,0,0,0.7)";ctx.fillRect(0,0,360,220);ctx.fillStyle="#fff";ctx.font="bold 28px Arial";ctx.fillText("GAME OVER!",80,90);ctx.font="bold 18px Arial";ctx.fillText("Score: "+score,120,120);ctx.fillText("Tap RESTART to play again",60,150);return;}}
+  for(let co of coins){if(!co.taken){co.x-=4;ctx.fillStyle="#FFD700";ctx.beginPath();ctx.arc(co.x,co.y,co.r,0,Math.PI*2);ctx.fill();ctx.strokeStyle="#B8860B";ctx.stroke();ctx.fillStyle="#000";ctx.font="bold 10px Arial";ctx.fillText("$",co.x-3,co.y+3);
+    if(Math.abs(player.x+15-co.x)<20&&Math.abs(player.y+15-co.y)<25){co.taken=true;coinCount++;score+=10;}}}
+  score+=0.1;
+  document.getElementById("score").innerText="Score: "+Math.floor(score)+" | Coins: "+coinCount+" | Best: "+best;
+  requestAnimationFrame(loop);
+}
+loop();
+</script>
+</body>
+  </html>
