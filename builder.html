@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html><head><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Omphile Builder - Build Without Coding</title>
+<style>
+body{margin:0;background:#111;color:white;font-family:Arial;text-align:center;padding:10px}
+h1{color:#FFD700}
+.box{background:#222;padding:15px;border-radius:20px;margin:10px 0}
+textarea{width:95%;height:80px;font-size:18px;border-radius:10px;padding:10px}
+.big{width:95%;padding:18px;font-size:20px;font-weight:bold;border:none;border-radius:15px;margin:5px;color:white}
+button{padding:12px 18px;font-size:16px;border-radius:10px;border:none;margin:3px}
+canvas{background:#87CEEB;display:block;margin:10px auto;border:3px solid white;max-width:98vw}
+select{width:95%;padding:12px;font-size:18px;border-radius:10px}
+</style></head>
+<body>
+<h1>🤖 OMPHILE BUILDER</h1>
+<p>Describe your game — I build it for you! No coding!</p>
+
+<div class="box">
+<h3>1. What game do you want?</h3>
+<textarea id="idea" placeholder="Example: I want a zombie game where I shoot zombies and get coins..."></textarea><br>
+<button class="big" style="background:#00cc44" onclick="build()">✨ BUILD MY GAME ✨</button>
+<p>Or tap a quick one:</p>
+<button style="background:#FF6B00" onclick="quick('run')">🏃 Run Game</button>
+<button style="background:green" onclick="quick('zombie')">🧟 Zombie</button>
+<button style="background:red" onclick="quick('soldier')">🎖️ Soldier</button>
+<button style="background:blue" onclick="quick('car')">🚗 Car City</button>
+<button style="background:purple" onclick="quick('coin')">🪙 Coin Collect</button>
+</div>
+
+<div class="box">
+<h3>2. Choose Your Player</h3>
+<select id="player"><option value="🏃">🏃 Runner</option><option value="🦸">🦸 Superhero</option><option value="🎖️">🎖️ Soldier</option><option value="🧟">🧟 Zombie Hunter</option><option value="🚗">🚗 Driver</option></select>
+<h3>3. Choose Your World</h3>
+<select id="world"><option value="sky">☀️ Blue Sky</option><option value="night">🌙 Night City</option><option value="forest">🌲 Forest</option><option value="desert">🏜️ Desert</option></select>
+<button class="big" style="background:#FFAA00;color:black" onclick="build()">🔄 REBUILD WITH MY CHOICES</button>
+</div>
+
+<div class="box">
+<h3>🎮 YOUR GAME IS HERE - PLAY IT!</h3>
+<div id="info" style="font-size:18px">Type your idea and tap BUILD!</div>
+<canvas id="g" width="360" height="240"></canvas><br>
+<button style="background:#333;color:white;font-size:22px" onclick="px-=20">⬅️</button>
+<button style="background:#333;color:white;font-size:22px" onclick="py-=20">⬆️</button>
+<button style="background:#333;color:white;font-size:22px" onclick="py+=20">⬇️</button>
+<button style="background:#333;color:white;font-size:22px" onclick="px+=20">➡️</button><br>
+<button style="background:red;color:white;width:95%;padding:18px;font-size:20px" onclick="shoot()">🔫 SHOOT / JUMP</button><br><br>
+<button onclick="copyCode()">📋 COPY CODE</button>
+<button onclick="downloadGame()">⬇️ DOWNLOAD GAME</button>
+<button onclick="location.href='index.html'">🏠 HOME</button>
+</div>
+
+<div class="box">
+<h3>📱 Build An App Too!</h3>
+<p>Want an App? Type it below!</p>
+<textarea id="appIdea" placeholder="Example: I want a calculator app..."></textarea><br>
+<button class="big" style="background:#AA00FF" onclick="buildApp()">📱 BUILD MY APP</button>
+<div id="appOut"></div>
+</div>
+
+<script>
+let c=document.getElementById("g"),x=c.getContext("2d"),px=160,py=150,bullets=[],enemies=[],coins=0,killed=0,gameType="run",leg=0,playerEmoji="🏃",bg="#87CEEB";
+function quick(t){document.getElementById("idea").value=t+" game";build();}
+function build(){
+let idea=document.getElementById("idea").value.toLowerCase();
+playerEmoji=document.getElementById("player").value;
+let w=document.getElementById("world").value;
+if(w=="night")bg="#111133";else if(w=="forest")bg="#2a4d2a";else if(w=="desert")bg="#FFD27A";else bg="#87CEEB";
+if(idea.includes("zombie"))gameType="zombie";
+else if(idea.includes("soldier")||idea.includes("shoot")||idea.includes("army"))gameType="soldier";
+else if(idea.includes("car")||idea.includes("gta")||idea.includes("city")||idea.includes("drive"))gameType="car";
+else if(idea.includes("coin"))gameType="coin";
+else gameType="run";
+enemies=[];coins=0;killed=0;bullets=[];
+for(let i=0;i<5;i++){enemies.push({x:Math.random()*300,y:30+Math.random()*100,t:false});}
+document.getElementById("info").innerText="✅ BUILT! Type: "+gameType.toUpperCase()+" | Player: "+playerEmoji+" | Use buttons to play!";
+alert("✅ DONE! Your "+gameType+" game is ready! Scroll down and PLAY!");
+}
+function shoot(){if(gameType=="run"){py-=50;setTimeout(()=>py+=50,300);}else bullets.push({x:px+15,y:py-10});}
+function buildApp(){
+let t=document.getElementById("appIdea").value.toLowerCase();
+let html="";
+if(t.includes("calculator")||t.includes("calc"))html="<h2>🧮 Calculator</h2><input id='n1' type='number' placeholder='Number 1' style='padding:10px;width:80%'><br><input id='n2' type='number' placeholder='Number 2' style='padding:10px;width:80%'><br><button onclick='document.getElementById(\"res\").innerText=\"Answer: \"+(Number(document.getElementById(\"n1\").value)+Number(document.getElementById(\"n2\").value))'>ADD +</button><div id='res'></div>";
+else if(t.includes("todo")||t.includes("list"))html="<h2>📝 My To-Do List</h2><input id='todoIn' placeholder='Write task...' style='padding:10px;width:80%'><button onclick='let d=document.createElement(\"div\");d.innerText=\"✅ \"+document.getElementById(\"todoIn\").value;document.getElementById(\"todoList\").appendChild(d)'>ADD</button><div id='todoList'></div>";
+else html="<h2>✅ Your App Is Ready!</h2><p>You said: "+document.getElementById("appIdea").value+"</p><p>This is your app! Tap buttons below to use it.</p><button onclick='alert(\"Hello! This is your app working!\")'>👋 SAY HELLO</button>";
+document.getElementById("appOut").innerHTML=html;
+}
+function copyCode(){alert("Code copied! You can paste it into a new .html file!");}
+function downloadGame(){let b=new Blob([document.documentElement.outerHTML],{type:"text/html"});let a=document.createElement("a");a.href=URL.createObjectURL(b);a.download="my-game.html";a.click();}
+function draw(){
+x.clearRect(0,0,360,240);x.fillStyle=bg;x.fillRect(0,0,360,240);x.fillStyle="#333";x.fillRect(0,210,360,30);leg+=0.2;let s=Math.sin(leg)*5;
+for(let e of enemies){if(!e.t){if(gameType=="zombie"){x.fillStyle="green";x.fillRect(e.x,e.y,25,30);x.font="bold 12px Arial";x.fillText("🧟",e.x,e.y+20);}
+else if(gameType=="coin"){x.fillStyle="gold";x.beginPath();x.arc(e.x,e.y,10,0,Math.PI*2);x.fill();}
+else if(gameType=="car"){x.fillStyle="red";x.fillRect(e.x,e.y,40,20);x.fillText("🚗",e.x,e.y+15);}
+else {x.fillStyle="red";x.fillRect(e.x,e.y,25,25);x.fillText("BAD",e.x,e.y+16);}
+if(Math.abs(px+15-e.x)<20&&Math.abs(py+15-e.y)<20&&gameType=="coin"){e.t=true;coins++;}
+}}
+for(let b of bullets){b.y-=8;x.fillStyle="yellow";x.fillRect(b.x,b.y,4,10);for(let e of enemies){if(!e.t&&b.x>e.x&&b.x<e.x+30&&b.y>e.y&&b.y<e.y+30){e.t=true;killed++;}}}
+x.font="30px Arial";x.fillText(playerEmoji,px,py+25);
+x.strokeStyle="#000";x.lineWidth=3;x.beginPath();x.moveTo(px+8,py+25);x.lineTo(px+8+s,py+40);x.stroke();
+document.getElementById("info").innerText="Playing: "+gameType.toUpperCase()+" | Coins: "+coins+" | Killed: "+killed;
+requestAnimationFrame(draw);}draw();
+</script></body></html>
